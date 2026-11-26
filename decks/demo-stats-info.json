@@ -1,0 +1,181 @@
+{
+  "schema_version": 1,
+  "id": "demo-stats-info",
+  "title": "Démo — Stats & Système",
+  "subtitle": "Banque de démonstration : LaTeX, Code, Cloze, QCM simples & multiples",
+  "language": "fr",
+  "updated_at": "2026-11-25",
+  "chapters": [
+    {
+      "id": "ch1",
+      "title": "1. Statistiques & Estimation"
+    },
+    {
+      "id": "ch2",
+      "title": "2. Système & Processus"
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-ch1-01",
+      "chapter": "ch1",
+      "type": "basic",
+      "difficulty": 2,
+      "tags": [
+        "formule",
+        "biais"
+      ],
+      "front": "Quelle est la formule de la variance empirique corrigée $S_n'^2$ et pourquoi divise-t-on par $n-1$ ?",
+      "back": "$$S_n'^2 = \\frac{1}{n-1}\\sum_{i=1}^n (X_i - \\bar{X}_n)^2$$\n\nLa division par $n-1$ (**correction de Bessel**) compense la perte d'un degré de liberté due à l'estimation de $\\mu$ par $\\bar{X}_n$. Ainsi, $\\mathbb{E}[S_n'^2] = \\sigma^2$ (estimateur sans biais).",
+      "hint": "Pense à la correction de Bessel et à la perte d'un degré de liberté.",
+      "source": "Chap. 1 — Estimation ponctuelle"
+    },
+    {
+      "id": "fc-ch1-02",
+      "chapter": "ch1",
+      "type": "cloze",
+      "difficulty": 2,
+      "tags": [
+        "loi",
+        "student"
+      ],
+      "text": "Pour un échantillon gaussien de taille $n$ avec $\\sigma$ inconnu, la statistique $T = \\frac{\\bar{X}_n - \\mu_0}{S_n' / \\sqrt{n}}$ suit sous $H_0$ une loi de {{Student::nom de la loi}} à {{$n - 1$}} degrés de liberté.",
+      "explanation": "Comme $\\sigma$ est estimé par $S_n'$, la distribution a des queues plus épaisses que $\\mathcal{N}(0, 1)$, surtout pour petit $n$.",
+      "source": "Chap. 1 — Tests d'hypothèses"
+    },
+    {
+      "id": "fc-ch2-01",
+      "chapter": "ch2",
+      "type": "cloze",
+      "difficulty": 1,
+      "tags": [
+        "posix",
+        "fork"
+      ],
+      "text": "Après un appel réussi à `fork()`, la valeur de retour est {{0}} dans le processus fils et {{le PID du fils}} dans le processus père.",
+      "explanation": "En cas d'échec (ex. limite de processus atteinte), `fork()` renvoie `-1` dans le père et aucun fils n'est créé.",
+      "source": "Chap. 2 — Création de processus"
+    },
+    {
+      "id": "fc-ch2-02",
+      "chapter": "ch2",
+      "type": "basic",
+      "difficulty": 2,
+      "tags": [
+        "zombie",
+        "wait"
+      ],
+      "front": "Qu'est-ce qu'un processus **zombie** sous Linux et comment l'éliminer ?",
+      "back": "Un processus zombie est un processus fils **déjà terminé** mais dont le code de retour n'a pas encore été récupéré par son père via `wait()` ou `waitpid()`.\n\nIl n'occupe plus de RAM ni de CPU, seulement une entrée dans la table des processus jusqu'à l'appel à `wait()` (ou jusqu'à la fin du père, auquel cas `init`/PID 1 l'adopte et le nettoie).",
+      "source": "Chap. 2 — Cycle de vie des processus"
+    }
+  ],
+  "qcm": [
+    {
+      "id": "qcm-ch1-01",
+      "chapter": "ch1",
+      "difficulty": 2,
+      "tags": [
+        "python",
+        "piège"
+      ],
+      "question": "En Python avec NumPy, que calcule `np.var(x)` par défaut si l'argument `ddof` n'est pas précisé ?",
+      "code": {
+        "language": "python",
+        "content": "import numpy as np\nx = np.array([10, 12, 14, 16])\nprint(np.var(x))"
+      },
+      "choices": [
+        {
+          "text": "La variance empirique biaisée (division par $n$, `ddof=0`)",
+          "correct": true,
+          "feedback": "Exact ! NumPy utilise `ddof=0` par défaut. Pour obtenir $S_n'^2$, il faut écrire `np.var(x, ddof=1)`."
+        },
+        {
+          "text": "La variance empirique sans biais (division par $n-1$, `ddof=1`)",
+          "correct": false,
+          "feedback": "Piège classique : c'est `pandas` (`Series.var()`) qui utilise `ddof=1` par défaut, alors que NumPy utilise `ddof=0`."
+        },
+        {
+          "text": "L'écart-type empirique corrigé (racine de $S_n'^2$)",
+          "correct": false,
+          "feedback": "Faux : `np.var` renvoie la variance (au carré). L'écart-type est calculé par `np.std`."
+        },
+        {
+          "text": "La variance théorique corrigée par la méthode de Welch",
+          "correct": false,
+          "feedback": "Faux : Welch concerne les degrés de liberté d'un test de comparaison de deux moyennes à variances inégales."
+        }
+      ],
+      "explanation": "Toujours vérifier la convention de la librairie en TP : NumPy (`np.var`, `np.std`) divise par $n$ (`ddof=0`), tandis que Pandas divise par $n-1$ (`ddof=1`).",
+      "source": "Chap. 1 — TP1 NumPy"
+    },
+    {
+      "id": "qcm-ch1-02",
+      "chapter": "ch1",
+      "difficulty": 3,
+      "tags": [
+        "p-value",
+        "piège"
+      ],
+      "question": "Lors d'un test d'hypothèses au seuil $\\alpha = 5\\%$, on obtient $p\\text{-value} = 0{,}012$. Quelle interprétation est correcte ?",
+      "choices": [
+        {
+          "text": "Sous $H_0$, la probabilité d'observer une statistique au moins aussi extrême est de $1{,}2\\%$ : on rejette $H_0$",
+          "correct": true,
+          "feedback": "Exact ! Comme $p = 0{,}012 < \\alpha = 0{,}05$, les données sont peu compatibles avec $H_0$, donc on rejette $H_0$ au seuil $5\\%$."
+        },
+        {
+          "text": "Il y a exactement $1{,}2\\%$ de chance que l'hypothèse nulle $H_0$ soit vraie",
+          "correct": false,
+          "feedback": "Piège n°1 sur la p-value ! Ce n'est PAS $P(H_0 \\mid \\text{données})$, mais $P(\\text{données aussi extrêmes} \\mid H_0)$."
+        },
+        {
+          "text": "L'hypothèse alternative $H_1$ est démontrée vraie avec une probabilité de $98{,}8\\%$",
+          "correct": false,
+          "feedback": "Faux : la p-value ne mesure pas la probabilité que $H_1$ soit vraie ; un test fréquentiste ne calcule pas de probabilité sur les hypothèses."
+        },
+        {
+          "text": "Comme $p < \\alpha$, on accepte $H_0$ avec un niveau de confiance de $95\\%$",
+          "correct": false,
+          "feedback": "Sens inversé ! On rejette $H_0$ quand $p < \\alpha$ (résultat trop improbable sous $H_0$)."
+        }
+      ],
+      "explanation": "La règle d'or : **si $p\\text{-value} < \\alpha$, on rejette $H_0$**. La p-value est toujours conditionnelle à $H_0$ supposée vraie.",
+      "source": "Chap. 1 — Interprétation de la p-value"
+    },
+    {
+      "id": "qcm-ch2-01",
+      "chapter": "ch2",
+      "difficulty": 2,
+      "tags": [
+        "posix",
+        "processus"
+      ],
+      "question": "Parmi les propositions suivantes concernant `fork()` et `exec()` sous POSIX, lesquelles sont vraies ?",
+      "choices": [
+        {
+          "text": "`fork()` duplique l'espace d'adressage du processus appelant (en Copy-on-Write)",
+          "correct": true,
+          "feedback": "Vrai : le fils hérite d'une copie logique indépendante de la mémoire du père (optimisée en Copy-on-Write)."
+        },
+        {
+          "text": "`exec()` remplace l'image mémoire du processus courant sans changer son PID",
+          "correct": true,
+          "feedback": "Vrai : `exec()` charge un nouveau programme dans le même processus et conserve le même PID."
+        },
+        {
+          "text": "`exec()` crée systématiquement un nouveau processus fils avant d'exécuter le binaire",
+          "correct": false,
+          "feedback": "Faux : `exec()` ne crée jamais de processus ; c'est la combinaison `fork()` puis `exec()` qui lance un nouveau programme dans un fils."
+        },
+        {
+          "text": "`fork()` réinitialise tous les descripteurs de fichiers ouverts avant de rendre la main",
+          "correct": false,
+          "feedback": "Faux : le fils hérite au contraire des descripteurs de fichiers ouverts du père (essentiel pour les pipes et redirections)."
+        }
+      ],
+      "explanation": "Sous Unix/POSIX, création de processus (`fork`) et chargement d'exécutable (`exec`) sont deux primitives séparées : `fork` duplique (avec héritage des descripteurs), `exec` remplace le programme en conservant le PID.",
+      "source": "Chap. 2 — Primitives POSIX"
+    }
+  ]
+}

@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Mes Révisions — Hub de Révision</title>
+  <style>
+    :root {
+      --bg: #f6f8fc;
+      --surface: #ffffff;
+      --surface-2: #f1f5f9;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --primary-soft: #eef2ff;
+      --teal: #0d9488;
+      --green: #059669;
+      --green-soft: #ecfdf5;
+      --amber: #d97706;
+      --amber-soft: #fffbeb;
+      --shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
+      --radius: 14px;
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, "Helvetica Neue", Arial, sans-serif;
+      --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+    [data-theme="dark"] {
+      --bg: #0b1120;
+      --surface: #131c31;
+      --surface-2: #1e293b;
+      --border: #283548;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --primary: #818cf8;
+      --primary-hover: #6366f1;
+      --primary-soft: rgba(99, 102, 241, 0.16);
+      --teal: #2dd4bf;
+      --green: #34d399;
+      --green-soft: rgba(16, 185, 129, 0.14);
+      --amber: #fbbf24;
+      --amber-soft: rgba(245, 158, 11, 0.14);
+      --shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font); line-height: 1.5; }
+    .container { max-width: 960px; margin: 0 auto; padding: 24px 16px 64px; }
+    .header { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; margin-bottom: 22px; }
+    .header h1 { margin: 0; font-size: 1.7rem; font-weight: 900; letter-spacing: -0.02em; }
+    .header p { margin: 4px 0 0; color: var(--text-muted); font-size: 0.95rem; }
+    .actions { display: flex; gap: 8px; }
+    .btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 14px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-weight: 700; font-size: 0.88rem; cursor: pointer; transition: 0.15s; text-decoration: none; }
+    .btn:hover { border-color: var(--primary); color: var(--primary); }
+    .btn-primary { background: var(--primary); color: #fff; border-color: transparent; }
+    .btn-primary:hover { background: var(--primary-hover); color: #fff; }
+    .search-bar { width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-size: 0.95rem; margin-bottom: 20px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+    .deck-card { display: flex; flex-direction: column; justify-content: space-between; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); text-decoration: none; color: inherit; transition: transform 0.15s, border-color 0.15s; }
+    .deck-card:hover { transform: translateY(-2px); border-color: var(--primary); }
+    .deck-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 8px; }
+    .deck-title { margin: 0; font-size: 1.15rem; font-weight: 800; }
+    .pill { font-size: 0.74rem; font-weight: 700; padding: 3px 9px; border-radius: 999px; white-space: nowrap; }
+    .pill.due { background: var(--amber-soft); color: var(--amber); }
+    .pill.ok { background: var(--green-soft); color: var(--green); }
+    .deck-sub { margin: 0 0 14px; font-size: 0.88rem; color: var(--text-muted); }
+    .meta-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+    .tag { font-size: 0.78rem; font-weight: 600; padding: 3px 8px; border-radius: 7px; background: var(--surface-2); color: var(--text-muted); }
+    .bar-head { display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 700; color: var(--text-muted); margin-bottom: 5px; }
+    .track { height: 7px; background: var(--border); border-radius: 999px; overflow: hidden; }
+    .fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--teal)); border-radius: 999px; }
+    .footer-note { margin-top: 28px; text-align: center; font-size: 0.84rem; color: var(--text-muted); }
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.58); display: none; align-items: center; justify-content: center; padding: 16px; z-index: 100; }
+    .modal-backdrop.open { display: flex; }
+    .modal { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); width: 100%; max-width: 560px; padding: 22px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
+    .modal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .modal-head h2 { margin: 0; font-size: 1.15rem; }
+    textarea { width: 100%; min-height: 82px; padding: 10px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text); font-family: var(--mono); font-size: 0.78rem; }
+    .row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+    .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #0f172a; color: #fff; padding: 10px 18px; border-radius: 999px; font-size: 0.88rem; font-weight: 600; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+    .toast.show { opacity: 1; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div>
+        <h1 id="hub-title">Mes Révisions</h1>
+        <p id="hub-subtitle">QCM diagnostiques & Flashcards à répétition espacée — progression locale privée par appareil.</p>
+      </div>
+      <div class="actions">
+        <button class="btn" id="btn-global-sync">Synchro globale</button>
+        <button class="btn" id="btn-theme">Sombre</button>
+      </div>
+    </header>
+
+    <input type="search" id="search" class="search-bar" placeholder="Rechercher une matière…" />
+    <main id="deck-grid" class="grid"></main>
+
+    <div class="footer-note">
+      Chacun conserve sa propre progression localement dans son navigateur. Utilise « Synchro globale » pour transférer ta progression entre ton PC et ton téléphone.
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="modal-sync">
+    <div class="modal">
+      <div class="modal-head">
+        <h2>Synchro globale (toutes les matières)</h2>
+        <button class="btn" id="btn-close-sync">✕</button>
+      </div>
+      <p style="margin-top:0; font-size:0.88rem; color:var(--text-muted);">Exporte ou importe ta progression pour toutes les matières du Hub en une seule fois.</p>
+      <textarea id="sync-out" readonly></textarea>
+      <div class="row" style="margin-bottom:16px;">
+        <button class="btn btn-primary" id="btn-copy">Copier</button>
+        <button class="btn" id="btn-dl">Télécharger .json</button>
+      </div>
+      <textarea id="sync-in" placeholder="Colle ici un code de synchro global…"></textarea>
+      <div class="row">
+        <button class="btn btn-primary" id="btn-imp">Fusionner</button>
+        <label class="btn" style="cursor:pointer;">Fichier .json<input type="file" id="file-in" accept=".json" style="display:none;"></label>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    let HUB = {"title":"Mes Révisions","decks":[{"id":"demo-stats-info","title":"Démo — Stats & Système","subtitle":"Banque de démonstration : LaTeX, Code, Cloze, QCM simples & multiples","path":"app.html?deck=demo-stats-info","chapters_count":2,"flashcards_count":4,"qcm_count":3,"total_items":7,"item_ids":["fc-ch1-01","fc-ch1-02","fc-ch2-01","fc-ch2-02","qcm-ch1-01","qcm-ch1-02","qcm-ch2-01"],"updated_at":"2026-11-25"}],"updated_at":"2026-11-25"};
+    const THEME_KEY = "study_trainer_theme";
+
+    function toast(msg) {
+      const el = document.getElementById("toast");
+      el.textContent = msg;
+      el.classList.add("show");
+      clearTimeout(el._t);
+      el._t = setTimeout(() => el.classList.remove("show"), 2200);
+    }
+
+    function applyTheme(t) {
+      document.documentElement.setAttribute("data-theme", t);
+      document.getElementById("btn-theme").textContent = t === "dark" ? "Clair" : "Sombre";
+      try { localStorage.setItem(THEME_KEY, t); } catch (e) {}
+    }
+
+    function readDeckProgress(deck) {
+      try {
+        const raw = localStorage.getItem("study_trainer_v1_" + deck.id);
+        if (!raw) return { mastered: 0, due: deck.total_items, total: deck.total_items };
+        const data = JSON.parse(raw);
+        const items = data.items || {};
+        const now = Date.now();
+        let mastered = 0, due = 0;
+        (deck.item_ids || []).forEach(id => {
+          const st = items[id];
+          if (!st || !st.lastSeen) { due += 1; return; }
+          if (st.mastery >= 2) mastered += 1;
+          if (st.mastery === 1 || st.due <= now) due += 1;
+        });
+        return { mastered, due, total: deck.total_items };
+      } catch (e) {
+        return { mastered: 0, due: deck.total_items, total: deck.total_items };
+      }
+    }
+
+    function escapeHtml(s) {
+      return String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+
+    function renderGrid(query = "") {
+      const q = query.trim().toLowerCase();
+      const decks = (HUB.decks || []).filter(d => !q || (d.title + " " + (d.subtitle || "")).toLowerCase().includes(q));
+      const grid = document.getElementById("deck-grid");
+      if (!decks.length) {
+        grid.innerHTML = `<p style="color:var(--text-muted);">Aucune matière trouvée.</p>`;
+        return;
+      }
+      grid.innerHTML = decks.map(d => {
+        const st = readDeckProgress(d);
+        const pct = st.total ? Math.round((st.mastered / st.total) * 100) : 0;
+        const badge = st.due > 0
+          ? `<span class="pill due">${st.due} à réviser</span>`
+          : `<span class="pill ok">À jour ✓</span>`;
+        return `
+          <a class="deck-card" href="${escapeHtml(d.path)}">
+            <div>
+              <div class="deck-top">
+                <h2 class="deck-title">${escapeHtml(d.title)}</h2>
+                ${badge}
+              </div>
+              <p class="deck-sub">${escapeHtml(d.subtitle || "")}</p>
+              <div class="meta-row">
+                <span class="tag">${d.qcm_count} QCM</span>
+                <span class="tag">${d.flashcards_count} Flashcards</span>
+                <span class="tag">${d.chapters_count} chap.</span>
+              </div>
+            </div>
+            <div>
+              <div class="bar-head"><span>Maîtrise</span><span>${pct}%</span></div>
+              <div class="track"><div class="fill" style="width:${pct}%;"></div></div>
+            </div>
+          </a>`;
+      }).join("");
+    }
+
+    function exportAll() {
+      const payload = { version: 1, exportedAt: Date.now(), decks: {} };
+      (HUB.decks || []).forEach(d => {
+        const raw = localStorage.getItem("study_trainer_v1_" + d.id);
+        if (raw) { try { payload.decks[d.id] = JSON.parse(raw); } catch (e) {} }
+      });
+      return payload;
+    }
+
+    function encodeSync(obj) {
+      const bytes = new TextEncoder().encode(JSON.stringify(obj));
+      let bin = "";
+      bytes.forEach(b => { bin += String.fromCharCode(b); });
+      return "STHUB1:" + btoa(bin);
+    }
+
+    function decodeSync(str) {
+      const c = str.trim();
+      if (c.startsWith("STHUB1:")) {
+        const bin = atob(c.slice(7));
+        return JSON.parse(new TextDecoder().decode(Uint8Array.from(bin, ch => ch.charCodeAt(0))));
+      }
+      return JSON.parse(c);
+    }
+
+    function importAll(payload) {
+      if (!payload || !payload.decks) throw new Error("Format global invalide.");
+      let updatedDecks = 0;
+      Object.entries(payload.decks).forEach(([deckId, incoming]) => {
+        const key = "study_trainer_v1_" + deckId;
+        let current = null;
+        try { current = JSON.parse(localStorage.getItem(key) || "null"); } catch (e) {}
+        if (!current || !current.items) {
+          localStorage.setItem(key, JSON.stringify(incoming));
+        } else {
+          Object.entries(incoming.items || {}).forEach(([id, st]) => {
+            const old = current.items[id];
+            if (!old || (st.lastSeen || 0) >= (old.lastSeen || 0)) current.items[id] = st;
+          });
+          current.updatedAt = Date.now();
+          localStorage.setItem(key, JSON.stringify(current));
+        }
+        updatedDecks += 1;
+      });
+      renderGrid(document.getElementById("search").value);
+      toast(`Progression fusionnée sur ${updatedDecks} matière(s) !`);
+    }
+
+    window.addEventListener("DOMContentLoaded", async () => {
+      try {
+        if (location.protocol !== "file:") {
+          const r = await fetch("decks/manifest.json", { cache: "no-cache" });
+          if (r.ok) HUB = await r.json();
+        }
+      } catch (e) {}
+      document.getElementById("hub-title").textContent = HUB.title || "Mes Révisions";
+      document.title = (HUB.title || "Mes Révisions") + " — Hub de Révision";
+      const t = localStorage.getItem(THEME_KEY) || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      applyTheme(t);
+      renderGrid();
+
+      document.getElementById("btn-theme").addEventListener("click", () => {
+        applyTheme(document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark");
+      });
+      document.getElementById("search").addEventListener("input", (e) => renderGrid(e.target.value));
+      document.getElementById("btn-global-sync").addEventListener("click", () => {
+        document.getElementById("sync-out").value = encodeSync(exportAll());
+        document.getElementById("sync-in").value = "";
+        document.getElementById("modal-sync").classList.add("open");
+      });
+      document.getElementById("btn-close-sync").addEventListener("click", () => document.getElementById("modal-sync").classList.remove("open"));
+      document.getElementById("modal-sync").addEventListener("click", (e) => { if (e.target.id === "modal-sync") e.target.classList.remove("open"); });
+      document.getElementById("btn-copy").addEventListener("click", async () => {
+        try { await navigator.clipboard.writeText(document.getElementById("sync-out").value); toast("Code global copié !"); } catch (e) {}
+      });
+      document.getElementById("btn-dl").addEventListener("click", () => {
+        const blob = new Blob([JSON.stringify(exportAll(), null, 2)], { type: "application/json" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `revisions_hub_backup_${new Date().toISOString().slice(0,10)}.json`;
+        a.click();
+      });
+      document.getElementById("btn-imp").addEventListener("click", () => {
+        try {
+          importAll(decodeSync(document.getElementById("sync-in").value));
+          document.getElementById("modal-sync").classList.remove("open");
+        } catch (e) { alert("Erreur : " + e.message); }
+      });
+      document.getElementById("file-in").addEventListener("change", (e) => {
+        const f = e.target.files[0];
+        if (!f) return;
+        const r = new FileReader();
+        r.onload = () => {
+          try { importAll(JSON.parse(r.result)); document.getElementById("modal-sync").classList.remove("open"); }
+          catch (err) { alert("Erreur : " + err.message); }
+        };
+        r.readAsText(f);
+      });
+    });
+  </script>
+</body>
+</html>

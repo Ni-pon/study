@@ -1,0 +1,26 @@
+{
+  "title": "Mes Révisions",
+  "decks": [
+    {
+      "id": "demo-stats-info",
+      "title": "Démo — Stats & Système",
+      "subtitle": "Banque de démonstration : LaTeX, Code, Cloze, QCM simples & multiples",
+      "path": "app.html?deck=demo-stats-info",
+      "chapters_count": 2,
+      "flashcards_count": 4,
+      "qcm_count": 3,
+      "total_items": 7,
+      "item_ids": [
+        "fc-ch1-01",
+        "fc-ch1-02",
+        "fc-ch2-01",
+        "fc-ch2-02",
+        "qcm-ch1-01",
+        "qcm-ch1-02",
+        "qcm-ch2-01"
+      ],
+      "updated_at": "2026-11-25"
+    }
+  ],
+  "updated_at": "2026-11-25"
+}
